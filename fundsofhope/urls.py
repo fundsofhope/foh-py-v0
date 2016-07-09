@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     # patterns('fundsofhope.views',
              url(r'^index/', TemplateView.as_view(template_name='upload.html')),
-             url(r'^saved/', views.upload_pic, name='saved')
+             url(r'^saved/', views.upload_pic, name='saved'),
+             url(r'^donate/', views.donate_project, name='donate')
 
 ]

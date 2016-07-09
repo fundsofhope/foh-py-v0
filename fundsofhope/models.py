@@ -1,14 +1,6 @@
 from django.db import models
 
 
-class User(models.Model):
-    name = models.CharField(max_length=500)
-    email = models.EmailField()
-    phoneNo = models.CharField(max_length=15)
-    fbCred = models.CharField(max_length=100, blank=True)
-    googleCred = models.CharField(max_length=100, blank=True)
-
-
 class Ngo(models.Model):
     name = models.CharField(max_length=500)
     email = models.EmailField(blank=True)
@@ -26,8 +18,18 @@ class Project(models.Model):
     endDate = models.DateTimeField()
     cost = models.BigIntegerField()
     status = models.BigIntegerField(blank=True)
+    ngo = models.ForeignKey(Ngo)
 
+
+class User(models.Model):
+    name = models.CharField(max_length=500)
+    email = models.EmailField()
+    phoneNo = models.CharField(max_length=15)
+    fbCred = models.CharField(max_length=100, blank=True)
+    googleCred = models.CharField(max_length=100, blank=True)
+    projects = models.ManyToManyField(Project, blank=True)
+    ngo = models.ManyToManyField(Ngo, blank=True)
 
 
 class ExampleModel(models.Model):
-    picture = models.ImageField(upload_to = 'pic_folder/', default = 'pic_folder/None/no-img.jpg')
+    picture = models.ImageField(upload_to='pic_folder/', default='pic_folder/None/no-img.jpg')

@@ -1,9 +1,11 @@
+from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 
 from fundsofhope.forms import UploadFileForm
 from fundsofhope.models import ExampleModel, User, Project
+from django.http import JsonResponse
 
 
 def upload_pic(request):
@@ -30,6 +32,27 @@ def donate_project(request):
         project = Project.objects.get(pk=id)
         user.projects.add(project)
         user.ngo.add(project.ngo)
-        project.cost = project.cost - int(amount)
+        project.cost -= int(amount)
         project.save()
         return HttpResponse('Donation Successful')
+
+
+@csrf_exempt
+def user_json(request):
+    if request.method == 'POST':
+        phoneNo = request.POST.get('phoneNo')
+        user = User.objects.get(phoneNo=phoneNo)
+        projects_donated = []
+        ngo_donated = []
+        for project in user.projects.all():
+            name = project.title
+            record = {"name": name}
+            projects_donated.append(record)
+        for ngo in user.ngo.all():
+            name = ngo.name
+            record = {"name":name}
+            # leads_as_json = serializers.serialize('json', user.ngo.all().exclude())
+            ngo_donated.append(record)
+
+        return JsonResponse({'name':user.name,'phoneNo':user.phoneNo,'email':user.email, 'ngo_donated':ngo_donated,
+                             'project_donated': projects_donated}, safe=False)

@@ -43,16 +43,16 @@ def user_json(request):
         phoneNo = request.POST.get('phoneNo')
         user = User.objects.get(phoneNo=phoneNo)
         projects_donated = []
-        ngo_donated = []
         for project in user.projects.all():
             name = project.title
-            record = {"name": name}
+            ngo = {"name":project.ngo.name,"ngo_id":project.ngo.ngoId,"email":project.ngo.email,"phone":project.ngo.phoneNo}
+            record = {"name": name,"ngo":ngo}
             projects_donated.append(record)
-        for ngo in user.ngo.all():
-            name = ngo.name
-            record = {"name":name}
-            # leads_as_json = serializers.serialize('json', user.ngo.all().exclude())
-            ngo_donated.append(record)
+        # for ngo in user.ngo.all():
+        #     name = ngo.name
+        #     record = {"name":name}
+        #     leads_as_json = serializers.serialize('json', user.ngo.all().exclude())
+            # ngo_donated.append(record)
 
-        return JsonResponse({'name':user.name,'phoneNo':user.phoneNo,'email':user.email, 'ngo_donated':ngo_donated,
+        return JsonResponse({'name':user.name,'phoneNo':user.phoneNo,'email':user.email,
                              'project_donated': projects_donated}, safe=False)

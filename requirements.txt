@@ -1,8 +1,9 @@
+cycler==0.10.0
 Django==1.9.7
 djangorestframework==3.3.3
-cycler==0.10.0
 gunicorn==19.6.0
 pbr==1.8.1
+Pillow==3.3.0
 pyparsing==2.1.1
 python-dateutil==2.5.2
 pytz==2016.3

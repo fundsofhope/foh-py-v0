@@ -28,7 +28,6 @@ class User(models.Model):
     fbCred = models.CharField(max_length=100, blank=True)
     googleCred = models.CharField(max_length=100, blank=True)
     projects = models.ManyToManyField(Project, blank=True)
-    ngo = models.ManyToManyField(Ngo, blank=True)
 
 
 class ExampleModel(models.Model):

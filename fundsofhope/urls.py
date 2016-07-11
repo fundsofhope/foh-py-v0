@@ -22,9 +22,10 @@ from fundsofhope import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-             url(r'^index/', TemplateView.as_view(template_name='upload.html')),
-             url(r'^saved/', views.upload_pic, name='saved'),
-             url(r'^donate/', views.donate_project, name='donate'),
-             url(r'^user/', views.user_json, name='user')
+    url(r'^index/', TemplateView.as_view(template_name='upload.html')),
+    url(r'^saved/', views.upload_pic, name='saved'),
+    url(r'^donate/', views.donate_project, name='donate'),
+    url(r'^user', views.user_json, name='user')
 ]
+
 urlpatterns += staticfiles_urlpatterns()

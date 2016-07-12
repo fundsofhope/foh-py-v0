@@ -16,13 +16,14 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView, TemplateView
 
 from fundsofhope import views
 
 urlpatterns = [
+    url(r'^$', RedirectView.as_view(url='/admin/fundsofhope')),
     url(r'^admin/', admin.site.urls),
-    url(r'^index/', TemplateView.as_view(template_name='upload.html')),
+    url(r'^upload/', TemplateView.as_view(template_name='upload.html')),
     url(r'^saved/', views.upload_pic, name='saved'),
     url(r'^donate/', views.donate_project, name='donate'),
     url(r'^user', views.user_json, name='user'),

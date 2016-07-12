@@ -30,5 +30,5 @@ class User(models.Model):
     projects = models.ManyToManyField(Project, blank=True)
 
 
-class ExampleModel(models.Model):
-    picture = models.ImageField(upload_to='pic_folder/', default='pic_folder/None/no-img.jpg')
+class Picture(models.Model):
+    picture = models.ImageField(upload_to='images/uploads', default='images/default/no-img.jpg')

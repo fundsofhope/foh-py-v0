@@ -4,14 +4,14 @@ from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 
 from fundsofhope.forms import UploadFileForm
-from fundsofhope.models import ExampleModel, User, Project
+from fundsofhope.models import Picture, User, Project
 
 
 def upload_pic(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            m = ExampleModel()
+            m = Picture()
             m.picture = form.cleaned_data['picture']
             m.save()
             return HttpResponse('image upload success')
@@ -72,12 +72,23 @@ def user_json(request):
 @csrf_exempt
 def projects(request):
     if request.method == 'GET':
-        projects = []
+        projects_arr = []
         for project in Project.objects.all():
-            ngo = {'id':project.ngo.ngoId, 'name':project.ngo.name, 'email':project.ngo.email,
-                   'phoneNo':project.ngo.phoneNo}
-            record = {'id':project.pk, 'title':project.title, 'description':project.description,
-                      'startDate':project.startDate, 'endDate':project.endDate, 'cost':project.cost,
-                      'status':project.status, 'ngo':ngo}
-            projects.append(record)
-        return JsonResponse({'projects':projects}, safe=False)
+            ngo = {
+                'id': project.ngo.ngoId,
+                'name': project.ngo.name,
+                'email': project.ngo.email,
+                'phoneNo': project.ngo.phoneNo
+            }
+            record = {
+                'id': project.pk,
+                'title': project.title,
+                'description': project.description,
+                'startDate': project.startDate,
+                'endDate': project.endDate,
+                'cost': project.cost,
+                'status': project.status,
+                'ngo': ngo
+            }
+            projects_arr.append(record)
+        return JsonResponse({'projects': projects_arr}, safe=False)

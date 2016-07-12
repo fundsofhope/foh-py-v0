@@ -67,3 +67,17 @@ def user_json(request):
             'project_donated': projects_donated
         },
             safe=False)
+
+
+@csrf_exempt
+def projects(request):
+    if request.method == 'GET':
+        projects = []
+        for project in Project.objects.all():
+            ngo = {'id':project.ngo.ngoId, 'name':project.ngo.name, 'email':project.ngo.email,
+                   'phoneNo':project.ngo.phoneNo}
+            record = {'id':project.pk, 'title':project.title, 'description':project.description,
+                      'startDate':project.startDate, 'endDate':project.endDate, 'cost':project.cost,
+                      'status':project.status, 'ngo':ngo}
+            projects.append(record)
+        return JsonResponse({'projects':projects}, safe=False)

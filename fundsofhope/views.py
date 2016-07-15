@@ -91,4 +91,4 @@ def projects(request):
                 'ngo': ngo
             }
             projects_arr.append(record)
-        return JsonResponse({'projects': projects_arr}, safe=False)
+        return JsonResponse(projects_arr, safe=False)

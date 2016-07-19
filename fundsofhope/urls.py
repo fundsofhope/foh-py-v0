@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^donate/', views.donate_project, name='donate'),
     url(r'^user', views.user_json, name='user'),
     url(r'^projects/all', views.projects, name='projects'),
+    url(r'^signup/', views.signup, name='signup'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

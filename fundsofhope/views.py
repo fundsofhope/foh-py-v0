@@ -91,4 +91,37 @@ def projects(request):
                 'ngo': ngo
             }
             projects_arr.append(record)
-        return JsonResponse({'projects': projects_arr}, safe=False)
+        return JsonResponse(projects_arr, safe=False)
+
+
+@csrf_exempt
+def signup(request):
+    global fbCred
+    if request.method == 'POST':
+        if User.objects.filter(phoneNo=request.POST['phoneNo']).count() > 0:
+           return JsonResponse({"status" : "User already exist", "user_id":User.objects.get(phoneNo=request.POST['phoneNo']).pk}, safe=False)
+        else:
+            user = User(
+                name=request.POST['name'],
+                phoneNo=request.POST['phoneNo'],
+                email=request.POST['email'],
+                )
+            user.save()
+            if 'fbCred' in request.POST and 'googleCred' in request.POST:
+                fbCred = request.POST['fbCred']
+                user.fbCred = fbCred
+                googleCred = request.POST['googleCred']
+                user.googleCred = googleCred
+                user.save()
+            elif 'fbCred' in request.POST:
+                fbCred = request.POST['fbCred']
+                user.fbCred = fbCred
+                user.save()
+            elif 'googleCred' in request.POST:
+                googleCred = request.POST['googleCred']
+                user.googleCred = googleCred
+                user.save()
+
+        return JsonResponse({"status":"success"})
+    else:
+        return JsonResponse({"status":"error"})

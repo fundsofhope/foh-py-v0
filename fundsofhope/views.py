@@ -102,7 +102,24 @@ def signup(request):
     if request.method == 'POST':
         body = json.loads(request.body)
         if User.objects.filter(phoneNo=body['phoneNo']).count() > 0:
-           return JsonResponse({"status" : "User already exist", "user_id":User.objects.get(phoneNo=body['phoneNo']).pk}, safe=False)
+            user = User.objects.get(phoneNo=body['phoneNo'])
+            user.name = body['name']
+            user.email = body['email']
+            if 'fbCred' in body and 'googleCred' in body and body['googleCred'] != "" and body['fbCred'] != "":
+                fbCred = body['fbCred']
+                user.fbCred = fbCred
+                googleCred = body['googleCred']
+                user.googleCred = googleCred
+                user.save()
+            elif 'fbCred' in body and body['fbCred'] != "":
+                fbCred = body['fbCred']
+                user.fbCred = fbCred
+                user.save()
+            elif 'googleCred' in body and body['googleCred'] != "":
+                googleCred = body['googleCred']
+                user.googleCred = googleCred
+                user.save()
+            return JsonResponse({"status" : "User updated", "user_id":User.objects.get(phoneNo=body['phoneNo']).pk}, safe=False)
         else:
             user = User(
                 name=body['name'],

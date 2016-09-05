@@ -1,3 +1,5 @@
+import json
+
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import render_to_response
@@ -98,27 +100,45 @@ def projects(request):
 def signup(request):
     global fbCred
     if request.method == 'POST':
-        if User.objects.filter(phoneNo=request.POST['phoneNo']).count() > 0:
-           return JsonResponse({"status" : "User already exist", "user_id":User.objects.get(phoneNo=request.POST['phoneNo']).pk}, safe=False)
-        else:
-            user = User(
-                name=request.POST['name'],
-                phoneNo=request.POST['phoneNo'],
-                email=request.POST['email'],
-                )
-            user.save()
-            if 'fbCred' in request.POST and 'googleCred' in request.POST:
-                fbCred = request.POST['fbCred']
+        body = json.loads(request.body)
+        if User.objects.filter(phoneNo=body['phoneNo']).count() > 0:
+            user = User.objects.get(phoneNo=body['phoneNo'])
+            user.name = body['name']
+            user.email = body['email']
+            if 'fbCred' in body and 'googleCred' in body and body['googleCred'] != "" and body['fbCred'] != "":
+                fbCred = body['fbCred']
                 user.fbCred = fbCred
-                googleCred = request.POST['googleCred']
+                googleCred = body['googleCred']
                 user.googleCred = googleCred
                 user.save()
-            elif 'fbCred' in request.POST:
-                fbCred = request.POST['fbCred']
+            elif 'fbCred' in body and body['fbCred'] != "":
+                fbCred = body['fbCred']
                 user.fbCred = fbCred
                 user.save()
-            elif 'googleCred' in request.POST:
-                googleCred = request.POST['googleCred']
+            elif 'googleCred' in body and body['googleCred'] != "":
+                googleCred = body['googleCred']
+                user.googleCred = googleCred
+                user.save()
+            return JsonResponse({"status" : "User updated", "user_id":User.objects.get(phoneNo=body['phoneNo']).pk}, safe=False)
+        else:
+            user = User(
+                name=body['name'],
+                phoneNo=body['phoneNo'],
+                email=body['email'],
+                )
+            user.save()
+            if 'fbCred' in body and 'googleCred' in body:
+                fbCred = body['fbCred']
+                user.fbCred = fbCred
+                googleCred = body['googleCred']
+                user.googleCred = googleCred
+                user.save()
+            elif 'fbCred' in body:
+                fbCred = body['fbCred']
+                user.fbCred = fbCred
+                user.save()
+            elif 'googleCred' in body:
+                googleCred = body['googleCred']
                 user.googleCred = googleCred
                 user.save()
 

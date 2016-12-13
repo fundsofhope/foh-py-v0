@@ -30,5 +30,13 @@ class User(models.Model):
     projects = models.ManyToManyField(Project, blank=True)
 
 
-class Picture(models.Model):
-    picture = models.ImageField(upload_to='images/uploads', default='images/default/no-img.jpg')
+def _upload_path(instance, filename):
+    return instance.get_upload_path(filename)
+
+
+class ProjectPicture(models.Model):
+    project = models.ForeignKey(Project)
+    picture = models.ImageField(upload_to=_upload_path, default='images/default/no-img.jpg')
+
+    def get_upload_path(self, filename):
+        return "images/" + str(self.project.pk) + "/" + filename

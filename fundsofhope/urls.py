@@ -19,11 +19,12 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView, TemplateView
 
 from fundsofhope import views
+from fundsofhope.views import upload_pic
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/admin/fundsofhope')),
     url(r'^admin/', admin.site.urls),
-    url(r'^upload/', TemplateView.as_view(template_name='upload.html')),
+    url(r'^(?P<project_id>\w{0,50})/upload/', upload_pic),
     url(r'^saved/', views.upload_pic, name='saved'),
     url(r'^donate/', views.donate_project, name='donate'),
     url(r'^user', views.user_json, name='user'),

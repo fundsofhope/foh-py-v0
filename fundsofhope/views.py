@@ -2,25 +2,48 @@ import json
 
 from django.http import HttpResponse
 from django.http import JsonResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, render
 from django.views.decorators.csrf import csrf_exempt
 
 from fundsofhope.forms import UploadFileForm
-from fundsofhope.models import Picture, User, Project
+from fundsofhope.models import ProjectPicture, User, Project
 
 
-def upload_pic(request):
+def upload_pic(request, project_id):
+    print project_id
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            m = Picture()
+            m = ProjectPicture()
             m.picture = form.cleaned_data['picture']
+            m.project.pk = project_id
             m.save()
-            return HttpResponse('image upload success')
+            # project = Project.objects.get(pk=project_id)
+            # project.photo_set.add(ProjectPicture.objects.get(pk=m.pk))
+            # project.save()
+            return JsonResponse({'status': 'true'})
+    else:
+        form = UploadFileForm()
+        form.id = project_id
+        return render(request,'upload.html',{'form':form})
 
 
 def index(request):
     return render_to_response('upload.html')
+
+
+
+@csrf_exempt
+def show_image(request, project_id):
+    if request.method == 'GET':
+        # body = json.loads(request.body)
+        # pic = Picture()
+        project = Project.objects.get(pk=project_id)
+        urls =[]
+        for image in project.image_set.all():
+            urls.append(image.picture.url)
+        return JsonResponse({'urls': urls})
+        # return JsonResponse({"url":user.picture.picture.url})
 
 
 @csrf_exempt
@@ -35,9 +58,9 @@ def donate_project(request):
             user.projects.add(project)
             project.cost -= int(amount)
             project.save()
-            return HttpResponse('Donation Successful')
+            return JsonResponse({'status':'Donation Successful'})
         else:
-            return HttpResponse('Donation Unsuccessful')
+            return HttpResponse({'status':'Donation Unsuccessful'})
 
 
 @csrf_exempt
@@ -66,7 +89,9 @@ def user_json(request):
             'name': user.name,
             'phoneNo': user.phoneNo,
             'email': user.email,
-            'project_donated': projects_donated
+            'project_donated': projects_donated,
+            'googleCred': user.googleCred,
+            'fbCred': user.fbCred
         },
             safe=False)
 
@@ -119,13 +144,14 @@ def signup(request):
                 googleCred = body['googleCred']
                 user.googleCred = googleCred
                 user.save()
-            return JsonResponse({"status" : "User updated", "user_id":User.objects.get(phoneNo=body['phoneNo']).pk}, safe=False)
+            return JsonResponse({"status": "User updated", "user_id": User.objects.get(phoneNo=body['phoneNo']).pk},
+                                safe=False)
         else:
             user = User(
                 name=body['name'],
                 phoneNo=body['phoneNo'],
                 email=body['email'],
-                )
+            )
             user.save()
             if 'fbCred' in body and 'googleCred' in body:
                 fbCred = body['fbCred']
@@ -142,6 +168,6 @@ def signup(request):
                 user.googleCred = googleCred
                 user.save()
 
-        return JsonResponse({"status":"success"})
+        return JsonResponse({"status": "success"})
     else:
-        return JsonResponse({"status":"error"})
+        return JsonResponse({"status": "error"})

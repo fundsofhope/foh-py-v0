@@ -107,7 +107,9 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+context_processors = [
+    'django.template.context_processors.media'
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
@@ -128,4 +130,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
 STATIC_ROOT = BASE_DIR+'/static/'
+PROJECT_ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+STATICFILES_DIRS = [
+    os.path.join(PROJECT_ROOT_PATH,"images/")
+]
+# MEDIA_ROOT = os.path.join(PROJECT_ROOT_PATH, 'static')
+# MEDIA_URL = '/media/'

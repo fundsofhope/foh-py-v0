@@ -39,4 +39,4 @@ class ProjectPicture(models.Model):
     picture = models.ImageField(upload_to=_upload_path, default='images/default/no-img.jpg')
 
     def get_upload_path(self, filename):
-        return "images/" + str(self.project.pk) + "/" + filename
+        return "images/uploads/" + str(self.project.pk) + "/" + filename

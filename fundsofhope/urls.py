@@ -14,22 +14,27 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.conf.urls.static import static
+
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.views.generic import RedirectView, TemplateView
 
+from django.views.generic import RedirectView
+
+from fundsofhope import settings
 from fundsofhope import views
-from fundsofhope.views import upload_pic
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/admin/fundsofhope')),
     url(r'^admin/', admin.site.urls),
-    url(r'^(?P<project_id>\w{0,50})/upload/', upload_pic),
+    # url(r'^(?P<project_id>\w{0,50})/upload/', upload_pic),
     url(r'^saved/', views.upload_pic, name='saved'),
-    url(r'^donate/', views.donate_project, name='donate'),
-    url(r'^user', views.user_json, name='user'),
-    url(r'^projects/all', views.projects, name='projects'),
-    url(r'^signup/', views.signup, name='signup'),
+    url(r'^project/', views.project, name='projects'),
+    url(r'^ngo/', views.ngo, name='ngos'),
+    url(r'^project/donate/', views.donate, name='donate'),
+    url(r'^user/signup/', views.signup, name='signup'),
+    url(r'^user/account/', views.account, name='account')
 ]
 
 urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

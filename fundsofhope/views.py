@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response, render
 from django.views.decorators.csrf import csrf_exempt
 
 from fundsofhope.forms import UploadImageForm
-from fundsofhope.models import ProjectPicture, User, Project
+from fundsofhope.models import ProjectPicture, User, Project, Ngo, NgoPicture
 
 
 # Picture Actions
@@ -38,9 +38,9 @@ def show_image(request, project_id):
     if request.method == 'GET':
         # body = json.loads(request.body)
         # pic = Picture()
-        project = Project.objects.get(pk=project_id)
+        proj = Project.objects.get(pk=project_id)
         urls = []
-        for image in project.image_set.all():
+        for image in proj.image_set.all():
             urls.append(image.picture.url)
         return JsonResponse({'urls': urls})
         # return JsonResponse({"url":user.picture.picture.url})
@@ -105,15 +105,15 @@ def account(request):
         phone_no = request.POST.get('phoneNo')
         user = User.objects.get(phoneNo=phone_no)
         projects_donated = []
-        for project in user.projects.all():
-            name = project.title
-            ngo = {
-                "name": project.ngo.name,
-                "ngo_id": project.ngo.ngoId,
-                "email": project.ngo.email,
-                "phone": project.ngo.phoneNo
+        for proj in user.projects.all():
+            name = proj.title
+            entry = {
+                "name": proj.ngo.name,
+                "ngo_id": proj.ngo.ngoId,
+                "email": proj.ngo.email,
+                "phone": proj.ngo.phoneNo
             }
-            record = {"name": name, "ngo": ngo}
+            record = {"name": name, "ngo": entry}
             projects_donated.append(record)
 
         return JsonResponse({
@@ -129,28 +129,47 @@ def account(request):
 
 # Project Actions
 @csrf_exempt
-def projects(request):
+def project(request):
     if request.method == 'GET':
-        projects_arr = []
-        for project in Project.objects.all():
-            ngo = {
-                'id': project.ngo.ngoId,
-                'name': project.ngo.name,
-                'email': project.ngo.email,
-                'phoneNo': project.ngo.phoneNo
+        if '_id' in request.GET:
+            _id = request.GET['_id']
+            proj = Project.objects.get(pk=_id)
+            entry = {
+                'id': proj.ngo.ngoId,
+                'name': proj.ngo.name,
             }
-            record = {
-                'id': project.pk,
-                'title': project.title,
-                'description': project.description,
-                'startDate': project.startDate,
-                'endDate': project.endDate,
-                'cost': project.cost,
-                'status': project.status,
-                'ngo': ngo
-            }
-            projects_arr.append(record)
-        return JsonResponse(projects_arr, safe=False)
+            image_arr = []
+            for img in ProjectPicture.objects.filter(project=proj):
+                image_arr.append(img.picture.url)
+            return JsonResponse({
+                'id': proj.pk,
+                'title': proj.title,
+                'description': proj.description,
+                'startDate': proj.startDate,
+                'endDate': proj.endDate,
+                'cost': proj.cost,
+                'status': proj.status,
+                'ngo': entry,
+                'images': image_arr
+            }, safe=False)
+        else:
+            projects_arr = []
+            for proj in Project.objects.all():
+                entry = {
+                    'id': proj.ngo.ngoId,
+                    'name': proj.ngo.name,
+                }
+                img = ProjectPicture.objects.filter(project=proj).first()
+                record = {
+                    'id': proj.pk,
+                    'title': proj.title,
+                    'cost': proj.cost,
+                    'status': proj.status,
+                    'header': img.picture.url,
+                    'ngo': entry
+                }
+                projects_arr.append(record)
+            return JsonResponse(projects_arr, safe=False)
 
 
 @csrf_exempt
@@ -160,11 +179,41 @@ def donate(request):
         amount = request.POST.get('amount')
         _id = request.POST.get('project_id')
         user = User.objects.get(phoneNo=phone_no)
-        project = Project.objects.get(pk=_id)
+        proj = Project.objects.get(pk=_id)
         if amount <= project.cost:
-            user.projects.add(project)
-            project.cost -= int(amount)
-            project.save()
+            user.projects.add(proj)
+            proj.cost -= int(amount)
+            proj.save()
             return JsonResponse({'status': 'Donation Successful'})
         else:
             return HttpResponse({'status': 'Donation Unsuccessful'})
+
+
+# NGO Actions
+@csrf_exempt
+def ngo(request):
+    if request.method == 'GET':
+        if '_id' in request.GET:
+            _id = request.GET['_id']
+            res = Ngo.objects.get(pk=_id)
+            image = NgoPicture.objects.filter(ngo=res).first()
+            return JsonResponse({
+                'id': res.ngoId,
+                'name': res.name,
+                'email': res.email,
+                'phoneNo': res.phoneNo,
+                'image': image.picture.url
+            }, safe=False)
+        else:
+            ngos_arr = []
+            for res in Ngo.objects.all():
+                image = NgoPicture.objects.filter(ngo=res).first()
+                entry = {
+                    'id': res.ngoId,
+                    'name': res.name,
+                    'email': res.email,
+                    'phoneNo': res.phoneNo,
+                    'image': image.picture.url
+                }
+                ngos_arr.append(entry)
+            return JsonResponse(ngos_arr, safe=False)

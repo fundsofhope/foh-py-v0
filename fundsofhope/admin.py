@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from fundsofhope.models import User, Ngo, Project, ProjectPicture
+from fundsofhope.models import User, Ngo, Project, ProjectPicture, NgoPicture
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -19,7 +19,12 @@ class ProjectPictureAdmin(admin.ModelAdmin):
     list_display = ['picture']
 
 
+class NgoPictureAdmin(admin.ModelAdmin):
+    list_display = ['picture']
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Ngo, NgoAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(ProjectPicture, ProjectPictureAdmin)
+admin.site.register(NgoPicture, NgoPictureAdmin)

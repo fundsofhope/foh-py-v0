@@ -27,13 +27,14 @@ from fundsofhope import views
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/admin/fundsofhope')),
     url(r'^admin/', admin.site.urls),
-    # url(r'^(?P<project_id>\w{0,50})/upload/', upload_pic),
-    url(r'^saved/', views.upload_pic, name='saved'),
-    url(r'^project/', views.project, name='projects'),
     url(r'^ngo/', views.ngo, name='ngos'),
-    url(r'^project/donate/', views.donate, name='donate'),
+    # url(r'^(?P<project_id>\w{0,50})/upload/', upload_pic),
+    # url(r'^saved/', views.upload_pic, name='saved'),
     url(r'^user/signup/', views.signup, name='signup'),
-    url(r'^user/account/', views.account, name='account')
+    url(r'^user/account/', views.account, name='account'),
+    url(r'^project/donate/', views.donate, name='donate'),
+    url(r'^project/', views.project, name='projects'),
+    url(r'^trending/', views.trending, name='trending'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

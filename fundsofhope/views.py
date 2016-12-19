@@ -1,6 +1,6 @@
 import json
+import operator
 
-from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import render_to_response, render
 from django.views.decorators.csrf import csrf_exempt
@@ -226,7 +226,29 @@ def ngo(request):
                 ngos_arr.append(entry)
             return JsonResponse(ngos_arr, safe=False)
 
-# @csrf_exempt
-# def trending(request):
-    # if request.method == 'GET':
-        # for project in Project.objects.all():
+
+@csrf_exempt
+def trending(request):
+    if request.method == 'GET':
+        proj_arr = {}
+        proj_array = []
+        for proj in Project.objects.all():
+            c = Donation.objects.filter(project=proj).count()
+            proj_arr[proj.pk] = c
+        for key in dict(sorted(proj_arr.items(), key=operator.itemgetter(1), reverse=True)[:3]).keys():
+            proj = Project.objects.get(pk=key)
+            entry = {
+                'id': proj.ngo.ngoId,
+                'name': proj.ngo.name,
+            }
+            img = ProjectPicture.objects.filter(project=proj).first()
+            record = {
+                'id': proj.pk,
+                'title': proj.title,
+                'cost': proj.cost,
+                'status': proj.status,
+                'header': img.picture.url,
+                'ngo': entry
+            }
+            proj_array.append(record)
+        return JsonResponse(proj_array, safe=False)

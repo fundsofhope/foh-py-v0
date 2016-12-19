@@ -73,4 +73,13 @@ class User(models.Model):
     phoneNo = models.CharField(max_length=15)
     fbCred = models.CharField(max_length=100, blank=True)
     googleCred = models.CharField(max_length=100, blank=True)
-    projects = models.ManyToManyField(Project, blank=True)
+
+
+class Picture(models.Model):
+    picture = models.ImageField(upload_to='images/uploads', default='images/default/no-img.jpg')
+
+
+class Donation(models.Model):
+    project = models.ForeignKey(Project)
+    user = models.ForeignKey(User)
+    amount = models.FloatField(null=True)

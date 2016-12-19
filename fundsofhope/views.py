@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response, render
 from django.views.decorators.csrf import csrf_exempt
 
 from fundsofhope.forms import UploadImageForm
-from fundsofhope.models import ProjectPicture, User, Project, Ngo, NgoPicture
+from fundsofhope.models import ProjectPicture, User, Project, Ngo, NgoPicture, Donation
 
 
 # Picture Actions
@@ -115,7 +115,22 @@ def account(request):
             }
             record = {"name": name, "ngo": entry}
             projects_donated.append(record)
-
+        for donation in Donation.objects.all():
+            if user.id == donation.user.id:
+                name = donation.project.title
+                ngo = {
+                    "name": donation.project.ngo.name,
+                    "ngo_id": donation.project.ngo.ngoId,
+                    "email": donation.project.ngo.email,
+                    "phone": donation.project.ngo.phoneNo
+                }
+                record = {"name": name, "ngo": ngo}
+                projects_donated.append(record)
+            # for ngo in user.ngo.all():
+            #     name = ngo.name
+            #     record = {"name":name}
+            #     leads_as_json = serializers.serialize('json', user.ngo.all().exclude())
+            # ngo_donated.append(record)
         return JsonResponse({
             'name': user.name,
             'phoneNo': user.phoneNo,
@@ -174,18 +189,14 @@ def project(request):
 @csrf_exempt
 def donate(request):
     if request.method == 'POST':
-        phone_no = request.POST.get('phoneNo')
-        amount = request.POST.get('amount')
-        _id = request.POST.get('project_id')
-        user = User.objects.get(phoneNo=phone_no)
-        proj = Project.objects.get(pk=_id)
-        if amount <= project.cost:
-            user.projects.add(proj)
-            proj.cost -= int(amount)
-            proj.save()
-            return JsonResponse({'status': 'Donation Successful'})
-        else:
-            return HttpResponse({'status': 'Donation Unsuccessful'})
+        donation = Donation()
+        donation.user = User.objects.get(pk=request.POST.get('user_id'))
+        donation.project = Project.objects.get(pk=request.POST.get('project_id'))
+        donation.amount = request.POST.get('amount')
+        donation.save()
+        return JsonResponse({'status': 'Donation Successful'})
+    else:
+        return JsonResponse({'status': 'Donation Failed'})
 
 
 # NGO Actions
@@ -214,3 +225,8 @@ def ngo(request):
                 }
                 ngos_arr.append(entry)
             return JsonResponse(ngos_arr, safe=False)
+
+# @csrf_exempt
+# def trending(request):
+    # if request.method == 'GET':
+        # for project in Project.objects.all():

@@ -1,8 +1,26 @@
 from django.db import models
 
 
-def _upload_path(instance, filename):
-    return instance.get_upload_path(filename)
+# def _upload_path(instance, filename):
+#     if instance.classtype == 1 and instance.imagetype == 1:
+#         return instance.get_profile_upload_path(filename)
+#     elif instance.classtype == 1 and instance.imagetype == 2:
+#         return instance.get_head_upload_path(filename)
+#     elif instance.classtype == 2:
+#         return instance.get_upload_path(filename)
+
+
+# def _upload_path(instance, filename):
+#     return instance.get_upload_path(filename)
+
+def get_ngo_profile_upload_path(self, filename):
+    return "uploads/ngo/" + str(self.ngo.pk) + "/profile/" + filename
+
+def get_ngo_head_upload_path(self, filename):
+    return "uploads/ngo/" + str(self.ngo.pk) + "/head/" + filename
+
+def get_project_picture_upload_path(self, filename):
+    return "uploads/projects/" + str(self.project.pk) + "/" + filename
 
 
 class Ngo(models.Model):
@@ -17,10 +35,18 @@ class Ngo(models.Model):
 
 class NgoPicture(models.Model):
     ngo = models.ForeignKey(Ngo)
-    picture = models.ImageField(upload_to=_upload_path, default='images/default/no-img.jpg')
+    profile = models.ImageField(upload_to=get_ngo_profile_upload_path, default='default/no-img.png')
+    head = models.ImageField(upload_to=get_ngo_head_upload_path, default='default/no-img.png')
+    # profile = models.ImageField(upload_to=lambda instance,
+    #                             filename: "uploads/ngo/".join([str(instance.pk), "/profile/", filename]),
+    #                             default='images/default/no-img.jpg')
+    # head = models.ImageField(upload_to=lambda instance, filename: "uploads/ngo/".join([str(instance.pk), "/head/",
+    #                                                                                    filename]),
+    #                          default='images/default/no-img.jpg')
+    # picture = models.ImageField(upload_to=_upload_path, default='images/default/no-img.png')
 
-    def get_upload_path(self, filename):
-        return "uploads/ngo/" + str(self.ngo.pk) + "/" + filename
+    # def get_upload_path(self, filename):
+    #     return "uploads/ngo/" + str(self.ngo.pk) + "/" + filename
 
 
 class Project(models.Model):
@@ -35,10 +61,10 @@ class Project(models.Model):
 
 class ProjectPicture(models.Model):
     project = models.ForeignKey(Project)
-    picture = models.ImageField(upload_to=_upload_path, default='images/default/no-img.jpg')
-
-    def get_upload_path(self, filename):
-        return "uploads/projects/" + str(self.project.pk) + "/" + filename
+    picture = models.ImageField(upload_to=get_project_picture_upload_path, default='default/no-img.png')
+    # picture = models.ImageField(upload_to=lambda instance,
+    #                             filename: "uploads/projects/".join([str(instance.pk), "/", filename]),
+    #                             default='images/default/no-img.jpg')
 
 
 class User(models.Model):

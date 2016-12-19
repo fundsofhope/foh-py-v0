@@ -142,7 +142,6 @@ def project(request):
             for img in ProjectPicture.objects.filter(project=proj):
                 image_arr.append(img.picture.url)
             return JsonResponse({
-                'id': proj.pk,
                 'title': proj.title,
                 'description': proj.description,
                 'startDate': proj.startDate,
@@ -198,11 +197,11 @@ def ngo(request):
             res = Ngo.objects.get(pk=_id)
             image = NgoPicture.objects.filter(ngo=res).first()
             return JsonResponse({
-                'id': res.ngoId,
                 'name': res.name,
                 'email': res.email,
                 'phoneNo': res.phoneNo,
-                'image': image.picture.url
+                'head': image.head.url,
+                'profile': image.profile.url
             }, safe=False)
         else:
             ngos_arr = []
@@ -211,9 +210,7 @@ def ngo(request):
                 entry = {
                     'id': res.ngoId,
                     'name': res.name,
-                    'email': res.email,
-                    'phoneNo': res.phoneNo,
-                    'image': image.picture.url
+                    'head': image.head.url
                 }
                 ngos_arr.append(entry)
             return JsonResponse(ngos_arr, safe=False)

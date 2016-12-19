@@ -20,7 +20,7 @@ class ProjectPictureAdmin(admin.ModelAdmin):
 
 
 class NgoPictureAdmin(admin.ModelAdmin):
-    list_display = ['picture']
+    list_display = ['head', 'profile']
 
 
 admin.site.register(User, UserAdmin)

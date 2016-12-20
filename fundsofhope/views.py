@@ -189,10 +189,11 @@ def project(request):
 @csrf_exempt
 def donate(request):
     if request.method == 'POST':
+        body = json.loads(request.body)
         donation = Donation()
-        donation.user = User.objects.get(pk=request.POST.get('user_id'))
-        donation.project = Project.objects.get(pk=request.POST.get('project_id'))
-        donation.amount = request.POST.get('amount')
+        donation.user = User.objects.get(pk=body['user_id'])
+        donation.project = Project.objects.get(pk=body['project_id'])
+        donation.amount = body['amount']
         donation.save()
         return JsonResponse({'status': 'Donation Successful'})
     else:

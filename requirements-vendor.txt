@@ -1,1 +1,4 @@
 gunicorn==19.6.0
+futures==2.1.6
+trollius==1.0.1
+
